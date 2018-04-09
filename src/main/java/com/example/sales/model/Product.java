@@ -2,21 +2,27 @@ package com.example.sales.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name="product")
+@Table(name = "product")
 public class Product {
 
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column(name = "name", nullable = false, unique=true)
 	private String name;
+
+	@Column(name = "price", nullable = false, scale=2,length=10)
 	private BigDecimal price;
+
+	@Column(name = "description", nullable = true, length=200)
 	private String description;
 
 	public Product(String name, BigDecimal price) {

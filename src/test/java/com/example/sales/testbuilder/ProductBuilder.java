@@ -7,12 +7,12 @@ import com.example.sales.model.Product;
 
 public class ProductBuilder {
 
-	public static final String DEFAULT_NAME = "Product 1";
-	public static final BigDecimal DEFAULT_PRICE = new BigDecimal("1.50");
+	public static final String DEFAULT_PRODUCT_NAME = "Product 1";
+	public static final BigDecimal DEFAULT_PRODUCT_PRICE = new BigDecimal("1.50");
 
 	private Optional<Long> id = Optional.empty();
-	private String name = DEFAULT_NAME;
-	private BigDecimal price = DEFAULT_PRICE;
+	private String name = DEFAULT_PRODUCT_NAME;
+	private BigDecimal price = DEFAULT_PRODUCT_PRICE;
 	private Optional<String> description = Optional.empty();
 
 	private ProductBuilder() {
@@ -33,8 +33,12 @@ public class ProductBuilder {
 		return this;
 	}
 
-	public ProductBuilder price(double price) {
-		this.price = new BigDecimal(price);
+	public ProductBuilder price(Double price) {
+		
+		if (price != null) {
+			this.price = new BigDecimal(price);
+		}
+		
 		return this;
 	}
 

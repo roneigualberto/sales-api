@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -37,14 +38,13 @@ public class ProductRepositoryTest {
 	}
 	
 	@Test
-	public void testSaveSuccess() {
-		assertEquals(product.getName(), ProductBuilder.DEFAULT_NAME);
-		assertEquals(product.getPrice(), ProductBuilder.DEFAULT_PRICE);
+	public void testSaveWithOnlyRequiredFields() {
+		assertEquals(product.getName(), ProductBuilder.DEFAULT_PRODUCT_NAME);
+		assertEquals(product.getPrice(), ProductBuilder.DEFAULT_PRODUCT_PRICE);
 		assertNotNull(product.getId());
     }
-	
 	@Test
-	public void testSaveWithAllProperties() {
+	public void testSaveWithAllFields() {
 		
 		final String PRODUCT_NAME = "Product A";
 		final Double PRODUCT_PRICE = 1.20;
@@ -64,16 +64,57 @@ public class ProductRepositoryTest {
 		assertEquals(productSaved.getDescription(),PRODUCT_DESCRIPTION);
 		assertNotNull(productSaved.getId());
     }
+
+	
+	@Test(expected=DataIntegrityViolationException.class)
+	public void testSaveWithNameExists() {
+		Product productSave = ProductBuilder.create()
+		 
+				.build();
+		
+		this.productRepository.save(productSave);
+		
+    }
 	
 	@Test
-	public void testFindByIdSuccess() {
+	public void testFindByNameExists() {
+		Optional<Product> productOpt = this.productRepository.findByName(ProductBuilder.DEFAULT_PRODUCT_NAME);
+		
+		assertTrue(productOpt.isPresent());
+		assertEquals(product.getName(), ProductBuilder.DEFAULT_PRODUCT_NAME);
+		assertEquals(product.getPrice(), ProductBuilder.DEFAULT_PRODUCT_PRICE);
+		assertNotNull(product.getId());
+    }
+	
+	@Test
+	public void testFindByNameNotExists() {
+		Optional<Product> productOpt = this.productRepository.findByName("Product 2");
+		assertTrue(!productOpt.isPresent());
+    }
+	
+	
+	
+	@Test(expected=DataIntegrityViolationException.class)
+	public void testSaveWithNullInNotNullFields() {
+		Product productSave = ProductBuilder.create()
+		  	.name(null)
+		  	.price(null)
+		.build();
+		
+		this.productRepository.save(productSave);
+		
+    }
+	
+	
+	@Test
+	public void testFindByIdExists() {
 		Optional<Product> productFindOpt = this.productRepository.findById(product.getId());
 		
 		Product productFind = productFindOpt.get();
 		
 		assertTrue(productFindOpt.isPresent());
-		assertEquals(productFind.getName(), ProductBuilder.DEFAULT_NAME);
-		assertEquals(productFind.getPrice(), ProductBuilder.DEFAULT_PRICE);
+		assertEquals(productFind.getName(), ProductBuilder.DEFAULT_PRODUCT_NAME);
+		assertEquals(productFind.getPrice(), ProductBuilder.DEFAULT_PRODUCT_PRICE);
 		assertNotNull(productFind.getId());
     }
 	
